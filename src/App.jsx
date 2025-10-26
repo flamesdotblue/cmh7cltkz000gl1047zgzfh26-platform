@@ -1,28 +1,55 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react';
+import Navbar from './components/Navbar.jsx';
+import Hero from './components/Hero.jsx';
+import SubjectsGrid from './components/SubjectsGrid.jsx';
+import QuizCard from './components/QuizCard.jsx';
+import ChatAssistant from './components/ChatAssistant.jsx';
+import RealtimeRoom from './components/RealtimeRoom.jsx';
+import { I18nProvider } from './i18n.js';
+import { motion, AnimatePresence } from 'framer-motion';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'en');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+    <I18nProvider lang={lang} setLang={setLang}>
+      <div className="min-h-screen bg-white text-gray-900 dark:bg-neutral-950 dark:text-gray-100 selection:bg-teal-300/60 selection:text-black">
+        <Navbar />
+        <main className="relative">
+          <Hero />
 
-export default App
+          <section id="learn" className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+            <SubjectsGrid />
+          </section>
+
+          <section id="quiz" className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+            <QuizCard />
+          </section>
+
+          <section id="rooms" className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+            <RealtimeRoom />
+          </section>
+        </main>
+
+        <AnimatePresence>
+          {mounted && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+              className="fixed bottom-4 right-4 z-20"
+            >
+              <ChatAssistant />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </I18nProvider>
+  );
+}
